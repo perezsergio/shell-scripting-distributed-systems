@@ -61,7 +61,7 @@ fi
 if [ "$use_custom_servers_file" == true ]; then
     servers_file=$custom_servers_file
 else
-    servers_file="/vagrant/servers"
+    servers_file="/vagrant/data/servers"
 fi
 
 # Loop over the servers at servers_file
