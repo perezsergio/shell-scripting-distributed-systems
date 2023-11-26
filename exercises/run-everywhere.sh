@@ -7,6 +7,15 @@ function echoUsage() {
     echo "Usage: $0 [-f FILE] [-n] [-s] [-v] COMMAND" >&2
 }
 
+function checkFileExists() {
+    # Usage checkFileExists FILE
+    file=$1
+    if [[ ! -e "$file" ]]; then
+        echo "Cannot open $file. No such file or directory." >&2
+        exit 1
+    fi
+}
+
 function dryRun() {
     # Usage: dryRun run_with_sudo server command1;command2;command3
     run_with_sudo=$1
@@ -66,6 +75,7 @@ fi
 
 # if use_custom_servers_file, use the specified file, else use the default servers_file
 if [ "$use_custom_servers_file" == true ]; then
+    checkFileExists "$custom_servers_file"
     servers_file=$custom_servers_file
 else
     servers_file="/vagrant/data/servers"
