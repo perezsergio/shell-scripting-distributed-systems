@@ -51,6 +51,13 @@ while getopts f:nsv OPTION; do
 done
 shift $((OPTIND - 1)) # Remove options from arguments
 
+# Don't execute script with sudo, use -s option instead
+if [[ "$UID" == 0 ]]; then
+    echo "Don't execute script with sudo, use -s option instead"
+    echoUsage
+    exit 1
+fi
+
 # if num of options is 0, echo usage and exit
 if [[ "$#" == 0 ]]; then
     echoUsage
@@ -75,8 +82,14 @@ while read -r server; do
     fi
     if [ "$run_with_sudo" == true ]; then
         sudo ssh -n -o ConnectTimeout=2 "$server" "$*"
+        exit_status=$?
     else
         ssh -n -o ConnectTimeout=2 "$server" "$*"
+        exit_status=$?
+    fi
+    if [ $exit_status -ne 0 ]; then
+        echo "Error: Received a non-zero exit status from $server" >&2
     fi
 done <"$servers_file"
-exit 0
+
+exit "$exit_status"
